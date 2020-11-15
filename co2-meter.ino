@@ -52,7 +52,7 @@ int act_pressure = 1010; //default 1010 hPa
 char co2_status[16] = "undefined";
 int int_pos = 0;
 int pos_new = 180;
-int pos_old = 0;
+int pos_old = 1;
 
 
 // define German characters
@@ -135,7 +135,7 @@ void setup()
   lcd.backlight();
   
   // render the splash screen
-  splash_screen();
+  //splash_screen();
                     
 }
 
@@ -145,11 +145,11 @@ void splash_screen()
 
   // set cursor to first column, first row
   lcd.setCursor(0, 0);
-  lcd.print("Frischluft");
-  lcd.setCursor(0, 1);
-  lcd.print("f");
+  lcd.print("  L");
   lcd.write(1); 
-  lcd.print("r alle");
+  lcd.print("ft-o-Meter  ");
+  lcd.setCursor(0, 1);
+  lcd.print("V 1.0");
   delay(2000);
   lcd.clear();
   lcd.setCursor(0, 0);
@@ -240,11 +240,49 @@ void loop()
 
     // display via LCD
     update_display();
-
-    //display via gauge
     update_gauge();
 
-    delay(1000);
+
+//    // calibration
+//    // act_CO2 = 0;
+//
+//
+//    //display via gauge
+
+//
+//    delay(1000);
+//
+//    // calibration
+//    act_CO2 = 600;
+//
+//
+//    //display via gauge
+//    update_gauge();
+//
+//    delay(1000);
+//
+//
+//        // calibration
+//    act_CO2 = 950;
+//
+//
+//        //display via gauge
+//    update_gauge();
+//
+//    delay(1000);
+//
+//
+//        // calibration
+//    act_CO2 = 1250;
+//
+//
+//    //display via gauge
+//    update_gauge();
+//
+//    delay(1000);
+
+
+    
 
   }
 //    act_temp = bmp.readTemperature();
@@ -299,21 +337,39 @@ void update_display(){
     lcd.print(co2_status);
   
 }
+
   
 void update_gauge(){
 
     // set servo position on gauge
 
-    //   
-    int_pos = (int)(round(act_CO2/10/5)*5);
 
-    Serial.print("int_pos:");
-    Serial.print(int_pos);
+    myservo.attach(13);  // pin 13 / D7
 
-    // avoid exceeding the scale
-    if (int_pos > 180) {
-      int_pos = 180;
+
+    Serial.print("### act_co2:");
+    Serial.println(act_CO2);
+
+   
+    int_pos = (int)round((act_CO2-400)*150/900/2)*2;
+
+    Serial.print("### int_pos (pre-corection):");
+    Serial.println(int_pos);
+
+    // pointer calibration 
+    // int_pos = 0;
+
+    // avoid exceeding the scale 
+    if (int_pos > 160) {
+      int_pos = 160;
+     
     }
+    else if (int_pos < 0) {
+      int_pos = 0;
+    }
+
+    Serial.print("### int_pos:");
+    Serial.println(int_pos);
 
     pos_new = 180-int_pos;
 
