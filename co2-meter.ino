@@ -2,7 +2,6 @@
   Reading CO2, humidity and temperature from the SCD30
   Displaying via 16x2 LED and servo driben gauge 
   By: Lars Seebach
-  SparkFun Electronics
   Date: 2020-11-09
   License: MIT. See license file for more information but you can
   basically do whatever you want with this code.
