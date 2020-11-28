@@ -25,6 +25,8 @@
 #include <Wire.h>
 #include <Servo.h>
 #include <Adafruit_BMP280.h>
+#include <inttypes.h>
+
 
 #define LCD_COLUMNS 16
 #define LCD_ROWS 2
@@ -114,10 +116,16 @@ void setup()
       ;
   }
 
+  //airSensor.setAutoSelfCalibration(false); // Sensirion no auto calibration
+
+  airSensor.setAutoSelfCalibration(true);
+
+  airSensor.setMeasurementInterval(5);     // CO2-Messung alle 5 s
+
   airSensor.setAltitudeCompensation(3); //Set altitude of the sensor in m
   // lt. https://de.wikipedia.org/wiki/Elmshorn Höhe: 3 m ü. NHN
 
-  airSensor.setAmbientPressure(1010); //Current ambient pressure in mBar: 700 to 1200
+  airSensor.setAmbientPressure((uint16_t)act_pressure); //Current ambient pressure in mBar: 700 to 1200
   // grob geschätzt
 
   if (airSensor.begin() == false)
@@ -164,7 +172,7 @@ void loop()
 
     act_temp = bmp.readTemperature();
     act_pressure = (int)round(bmp.readPressure()/100);
-    act_alt = bmp.readAltitude(1013.25); /* Adjusted to local forecast! */
+    act_alt = bmp.readAltitude(1010); /* Adjusted to local forecast! */
 
     calc_alt = 44330 * (1.0 - pow((act_pressure) / 1013.25, 0.1903));
 
@@ -174,7 +182,7 @@ void loop()
     Serial.print(act_temp);
     Serial.println(" *C");
 
-    Serial.print("Pressure = ");
+    Serial.print("act Pressure = ");
     Serial.print(act_pressure);
     Serial.println(" hPa");
 
@@ -228,7 +236,7 @@ void loop()
     Serial.println(act_Humidity, 1);
     
     Serial.print(co2_status);
-    Serial.print(act_Humidity, 1);
+
 
     Serial.println();
 
@@ -240,55 +248,9 @@ void loop()
     // display via LCD
     update_display();
     update_gauge();
-
-
-//    // calibration
-//    // act_CO2 = 0;
-//
-//
-//    //display via gauge
-
-//
-//    delay(1000);
-//
-//    // calibration
-//    act_CO2 = 600;
-//
-//
-//    //display via gauge
-//    update_gauge();
-//
-//    delay(1000);
-//
-//
-//        // calibration
-//    act_CO2 = 950;
-//
-//
-//        //display via gauge
-//    update_gauge();
-//
-//    delay(1000);
-//
-//
-//        // calibration
-//    act_CO2 = 1250;
-//
-//
-//    //display via gauge
-//    update_gauge();
-//
-//    delay(1000);
-
-
-    
+   
 
   }
-//    act_temp = bmp.readTemperature();
-//    act_pressure = bmp.readPressure()/100;
-//    act_alt = bmp.readAltitude(1013.25); /* Adjusted to local forecast! */
-//    ;
-//
 
 
 }
